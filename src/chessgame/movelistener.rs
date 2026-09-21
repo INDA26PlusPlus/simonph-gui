@@ -1,8 +1,8 @@
 use bevy::prelude::*;
-
+use super::movevalidator::MetaBoard;
 #[derive(States, Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub enum MoveState{
-    ActiveSquare(i8,i8),
+    ActiveSquare(usize,usize),
     //ActivePiece(i8,i8),
     //Promotion(i8,i8,i8,i8),
     #[default]
@@ -11,18 +11,24 @@ pub enum MoveState{
 
 #[derive(Event)]
 pub struct SquareClicked{
-    pub square:(i8,i8)
+    pub square:(usize,usize)
 }
 
 pub fn click_listener(
     click : On<SquareClicked>,
     state: Res<State<MoveState>>,
     mut next_state: ResMut<NextState<MoveState>>,
+    mut meta_board: ResMut<MetaBoard>
+
     
 ){
     let square = click.square;
     match state.get(){
         MoveState::ActiveSquare(x,y) => {
+            match meta_board.make_move((*x,*y), square, 'q'){
+                Ok(_) => next_state.set(MoveState::None),
+                Err(_) => next_state.set(MoveState::None)
+            }
             println!("make move {} {} to {} {}", x,y, square.0,square.1);
             next_state.set(MoveState::None);
         }

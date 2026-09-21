@@ -8,6 +8,7 @@ impl Plugin for ChessGamePlugin{
         app.init_state::<movelistener::MoveState>()
         .add_observer(movelistener::click_listener)
         .add_systems(Startup, board::makeboard)
-        .add_systems(Update, board::click_square);
+        .add_systems(Update, board::click_square)
+        .init_resource::<movevalidator::MetaBoard>();
     }
 }

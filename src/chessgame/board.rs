@@ -4,8 +4,8 @@ use super::movelistener::SquareClicked;
 pub struct Square{}
 #[derive(Component)]
 pub struct BoardPosition{
-    x:i8,
-    y:i8
+    x:usize,
+    y:usize
 }
 pub fn makeboard(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>,mut materials: ResMut<Assets<ColorMaterial>>){
     let gridw = 500.0;
@@ -24,7 +24,7 @@ pub fn makeboard(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>,mut ma
             };
             commands.spawn((
                 Square{},
-                BoardPosition{x:i as i8,y:j as i8},
+                BoardPosition{x:i,y:j},
                 Mesh2d(tile_mesh.clone()),
                 MeshMaterial2d(tilecolour),
                 Transform::from_xyz(posx,posy,0.0),

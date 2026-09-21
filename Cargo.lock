@@ -4541,6 +4541,11 @@ dependencies = [
 ]
 
 [[package]]
+name = "samolss-chess"
+version = "0.1.0"
+source = "git+https://github.com/INDA26PlusPlus/samolss-chess.git#9e8db3cce6af776109187f2e74f2ef3201c02531"
+
+[[package]]
 name = "scoped-tls"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4662,6 +4667,7 @@ name = "simonph-gui"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "samolss-chess",
 ]
 
 [[package]]
