@@ -1,8 +1,11 @@
 use bevy::prelude::*;
+use crate::chessgame::movevalidator::MetaBoard;
+
 use super::event::BoardUpdated;
 use super::movelistener::SquareClicked;
 use super::piece::PieceComponent;
 use super::boardconstants::*;
+use super::event::MakeBoard;
 #[derive(Component)]
 pub struct Square{}
 #[derive(Component)]
@@ -15,7 +18,15 @@ pub fn get_world_position(x:usize, y:usize) -> (f32,f32){
     let posy = -TILE_SIZE*3.5 + TILE_SIZE*(y as f32);
     (posx,posy)
 }
-pub fn makeboard(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>,mut materials: ResMut<Assets<ColorMaterial>>){
+pub fn makeboard(
+    _:On<MakeBoard>,
+    mut commands: Commands, 
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+    mut meta_board: ResMut<MetaBoard>
+)
+{
+    *meta_board = MetaBoard::default();
     let tile_mesh = meshes.add(Rectangle::new(TILE_SIZE,TILE_SIZE));
     let white_colour = materials.add(Color::srgb_u8(51, 152, 75));
     let black_colour = materials.add(Color::srgb_u8(30, 111, 80));

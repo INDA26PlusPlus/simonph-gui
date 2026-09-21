@@ -6,6 +6,7 @@ fn main() {
         .add_plugins(chessgame::ChessGamePlugin)
         .insert_resource(ClearColor(Color::srgb_u8(150, 252, 116)))
         .add_systems(Startup, setup)
+        .add_systems(Update, tempmenu)
         .run();
 }
 
@@ -14,6 +15,11 @@ fn setup(mut commands: Commands) {
 }
 
 
+pub fn tempmenu(keyboard:Res<ButtonInput<KeyCode>>,mut commands: Commands){
+    if keyboard.just_pressed(KeyCode::Enter){
+        commands.trigger(chessgame::MakeBoard{});
+    }
+}
 
 
 
