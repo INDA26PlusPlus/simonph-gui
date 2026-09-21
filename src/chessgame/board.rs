@@ -1,22 +1,33 @@
 use bevy::prelude::*;
+use super::event::BoardUpdated;
 use super::movelistener::SquareClicked;
+use super::piece::PieceComponent;
+use super::boardconstants::*;
 #[derive(Component)]
 pub struct Square{}
 #[derive(Component)]
 pub struct BoardPosition{
-    x:usize,
-    y:usize
+    pub x:usize,
+    pub y:usize
+}
+pub fn get_world_position(x:usize, y:usize) -> (f32,f32){
+    let posx = -TILE_SIZE*3.5 + TILE_SIZE*(x as f32);
+    let posy = -TILE_SIZE*3.5 + TILE_SIZE*(y as f32);
+    (posx,posy)
 }
 pub fn makeboard(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>,mut materials: ResMut<Assets<ColorMaterial>>){
-    let gridw = 500.0;
-    let tilew = gridw/8.0;
-    let tile_mesh = meshes.add(Rectangle::new(tilew,tilew));
-    let white_colour = materials.add(Color::srgb_u8(250, 250, 250));
-    let black_colour = materials.add(Color::srgb_u8(0,0,0));
+    let tile_mesh = meshes.add(Rectangle::new(TILE_SIZE,TILE_SIZE));
+    let white_colour = materials.add(Color::srgb_u8(51, 152, 75));
+    let black_colour = materials.add(Color::srgb_u8(30, 111, 80));
+    let border_colour = materials.add(Color::srgb_u8(93, 44, 40));
+    commands.spawn((
+        Mesh2d(meshes.add(Rectangle::new(BOARD_SIZE + BORDER_SIZE,BOARD_SIZE + BORDER_SIZE))),
+        Transform::from_xyz(0.0,0.0,-1.0),
+        MeshMaterial2d(border_colour),
+    ));
     for i in 0..8{
         for j in 0..8{
-            let posx = -tilew*3.5 + tilew*(i as f32);
-            let posy = -tilew*3.5 + tilew*(j as f32);
+            let (posx,posy) = get_world_position(i,j);
             let tilecolour = match (i+j)%2{
                 1 => white_colour.clone(),
                 0 => black_colour.clone(),
@@ -29,8 +40,16 @@ pub fn makeboard(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>,mut ma
                 MeshMaterial2d(tilecolour),
                 Transform::from_xyz(posx,posy,0.0),
             ));
+            let piecesprite = Sprite::default();
+            commands.spawn((
+                PieceComponent{},
+                BoardPosition{x:i,y:j},
+                piecesprite,
+                Transform::from_xyz(posx, posy, 1.0),
+            ));
         }
     }
+    commands.trigger(BoardUpdated{});
 }
 pub fn click_square(
     mouse: Res<ButtonInput<MouseButton>>,

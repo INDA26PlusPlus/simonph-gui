@@ -1,0 +1,8 @@
+pub const BOARD_SIZE: f32 = 500.0;
+pub const BOARD_TILES: f32 = 8.0;
+pub const TILE_SIZE: f32 = BOARD_SIZE / BOARD_TILES;
+pub const PIECE_WIDTH_RATIO: f32 = 0.7;
+pub const PICE_IMG_SIZE:f32 = 14.0;
+pub const PIECE_WIDTH: f32 = TILE_SIZE * PIECE_WIDTH_RATIO/PICE_IMG_SIZE;
+pub const PIECE_LOWER:f32 = TILE_SIZE/8.0;
+pub const BORDER_SIZE: f32 = BOARD_SIZE/16.0;

@@ -1,4 +1,6 @@
 use bevy::prelude::*;
+use crate::chessgame::event::BoardUpdated;
+
 use super::movevalidator::MetaBoard;
 #[derive(States, Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub enum MoveState{
@@ -18,7 +20,8 @@ pub fn click_listener(
     click : On<SquareClicked>,
     state: Res<State<MoveState>>,
     mut next_state: ResMut<NextState<MoveState>>,
-    mut meta_board: ResMut<MetaBoard>
+    mut meta_board: ResMut<MetaBoard>,
+    mut commands:Commands
 
     
 ){
@@ -26,7 +29,10 @@ pub fn click_listener(
     match state.get(){
         MoveState::ActiveSquare(x,y) => {
             match meta_board.make_move((*x,*y), square, 'q'){
-                Ok(_) => next_state.set(MoveState::None),
+                Ok(_) => {
+                    next_state.set(MoveState::None);
+                    commands.trigger(BoardUpdated{});
+                },
                 Err(_) => next_state.set(MoveState::None)
             }
             println!("make move {} {} to {} {}", x,y, square.0,square.1);

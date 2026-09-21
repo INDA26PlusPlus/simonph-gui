@@ -1,6 +1,7 @@
 use samolss_chess::board::Board;
 use samolss_chess::board::create_board;
 use samolss_chess::move_piece::move_piece;
+use samolss_chess::board::Piece;
 use bevy::prelude::*;
 #[derive(Resource)]
 pub struct MetaBoard{
@@ -22,6 +23,9 @@ impl MetaBoard{
             }
         };
         return Ok(());
+    }
+    pub fn get_piece(&self, pos:(usize,usize))->Piece{
+        self.board.squares[pos.1][pos.0]
     }
 }
 impl Default for MetaBoard{
