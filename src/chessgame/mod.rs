@@ -8,7 +8,7 @@ mod event;
 mod boardconstants;
 mod states;
 use states::*;
-use crate::chessgame::board::remove_active;
+mod highlighter;
 
 use super::GameState;
 pub use event::MakeBoard;
@@ -17,16 +17,29 @@ impl Plugin for ChessGamePlugin{
     fn build(&self, app: &mut App) {
         app.init_state::<MoveState>()
         .init_state::<HighlightStage>()
-        .add_systems(Startup, chessassets::load_piece_assets)
-        .add_observer(movelistener::click_listener)
-        .add_systems(Update, board::click_square)
-        .init_resource::<movevalidator::MetaBoard>()
+        .add_observer(set_clear_observer)
+        .add_systems(OnExit(MoveState::ActiveSquare),set_clear)
+        .add_systems(OnEnter(HighlightStage::Clear), redirect_clear)
+
+        .add_observer(set_none)
+        .add_observer(set_active_square)
         .add_observer(piece::update_piece_sprite)
+
+        .init_resource::<movevalidator::MetaBoard>()
+
+        .init_resource::<movelistener::MoveListener>()
+        .add_observer(movelistener::none_click_listener.run_if(in_state(MoveState::None)))
+        .add_observer(movelistener::has_active_listener.run_if(in_state(MoveState::ActiveSquare)))
+        .add_observer(movelistener::update_start)
+        .add_observer(movelistener::reset_move_listener)
+
+        .add_systems(OnEnter(HighlightStage::Clear),highlighter::remove_active)
+        .add_systems(OnEnter(HighlightStage::Active),highlighter::highlight_legal_moves)
+        .add_systems(OnEnter(HighlightStage::Active), highlighter::highlight_square)
+        .add_systems(Update,highlighter::added_active)
+
+        .add_systems(Startup,chessassets::load_piece_assets)
         .add_systems(OnEnter(GameState::PlayingGame),board::makeboard)
-        .add_systems(OnEnter(states::HighlightStage::Active), board::highlight_legal_moves)
-        .add_systems(Update,board::added_active)
-        .add_systems(OnEnter(states::HighlightStage::Clear),remove_active)
-        .add_systems(OnEnter(states::HighlightStage::Active),board::highlight_square)
-        .add_systems(OnEnter(HighlightStage::Clear), set_active);
+        .add_systems(Update,board::click_square);
     }
 }

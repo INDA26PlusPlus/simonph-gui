@@ -50,6 +50,16 @@ impl MetaBoard{
         }
         return ret;
     }
+    pub fn pick_promotion(&self,start:(usize,usize), end:(usize,usize))->bool{
+        if !self.get_legal_moves(start).contains(&end){
+            return false;
+        }
+        match self.get_piece(start){
+            Piece::Pawn {..} => {},
+            _ => return false,
+        }
+        return end.1 == 7 || end.1 == 0;
+    }
 }
 impl Default for MetaBoard{
     fn default() -> Self {
