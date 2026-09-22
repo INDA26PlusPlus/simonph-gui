@@ -32,7 +32,12 @@ impl MetaBoard{
     pub fn get_piece(&self, pos:(usize,usize))->Piece{
         self.board.squares[pos.1][pos.0]
     }
-
+    pub fn is_same_colour_piece(&self, pos:(usize,usize))-> bool{
+        match self.board.squares[pos.1][pos.0].is_white(){
+            None => false,
+            Some(v) => !self.board.white_turn^v,
+        }
+    }
     // pub fn get_all_legal_moves(&self)-> Vec<((usize,usize),(usize,usize),char)>{
     //     return gen_all_moves(&self.board);
     // }

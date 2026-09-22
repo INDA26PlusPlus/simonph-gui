@@ -5,6 +5,7 @@ use super::event::BoardUpdated;
 use super::movelistener::SquareClicked;
 use super::piece::PieceComponent;
 use super::boardconstants::*;
+use super::states::*;
 #[derive(Component)]
 pub struct Square{}
 #[derive(Component)]
@@ -95,9 +96,14 @@ pub fn click_square(
 }
 #[derive(Component)]
 pub struct SquareHighlight{}
-pub fn highlight_square(square: On<SquareClicked>, mut commands: Commands, query:Query<(Entity,&BoardPosition),With<Square>>){
+
+pub fn highlight_square(move_state: Res<State<MoveState>>, mut commands: Commands, query:Query<(Entity,&BoardPosition),With<Square>>){
+    let square = match *move_state.get(){
+        MoveState::None => return,
+        MoveState::ActiveSquare(x,y ) => (x,y)
+    };
     for (entity, pos) in query{
-        if pos.x != square.square.0 || pos.y != square.square.1{
+        if pos.x != square.0 || pos.y != square.1{
             continue;
         }
         commands.entity(entity).insert(SquareHighlight{});
@@ -113,13 +119,18 @@ pub fn added_active(
         }
     }
 }
-pub fn highlight_legal_moves(square: On<SquareClicked>, 
+pub fn highlight_legal_moves(move_state: Res<State<MoveState>>, 
     mut commands: Commands, 
     query:Query<(Entity,&BoardPosition),With<Square>>,
     meta_board:Res<MetaBoard>)
+
 {
     println!("gaah");
-    let legal_moves = meta_board.get_legal_moves(square.square);
+    let square = match *move_state.get(){
+        MoveState::None => return,
+        MoveState::ActiveSquare(x,y)=> (x,y),
+    };
+    let legal_moves = meta_board.get_legal_moves(square);
     for x in &legal_moves{
         println!("{} {}",x.0,x.1);
     }
