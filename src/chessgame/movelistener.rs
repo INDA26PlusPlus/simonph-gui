@@ -13,7 +13,7 @@ pub enum MoveState{
 
 #[derive(Event)]
 pub struct SquareClicked{
-    pub square:(usize,usize)
+    pub square:(usize,usize),
 }
 
 pub fn click_listener(
@@ -39,6 +39,7 @@ pub fn click_listener(
             next_state.set(MoveState::None);
         }
         MoveState::None => {
+            //commands.entity(click.entity).insert(super::board::SquareHighlight{});
             next_state.set(MoveState::ActiveSquare(square.0, square.1));
         }
 
