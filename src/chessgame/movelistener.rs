@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use crate::chessgame::event::{BoardUpdated, SquareDeselect, SquareSelect};
 
 use super::movevalidator::MetaBoard;
-
+use super::states::MoveState;
 
 #[derive(Event)]
 pub struct SquareClicked{
@@ -54,6 +54,35 @@ pub fn has_active_listener(
         if let Some(state_square) = state.start{
             if state_square == square{
                 commands.trigger(SquareDeselect);
+                return;
+            }
+        }
+        commands.trigger(SquareSelect{square});
+        return;
+    }
+    commands.trigger(SquareDeselect{});
+}
+pub fn has_active_piece_listener(
+    click : On<SquareClicked>,
+    mut meta_board: ResMut<MetaBoard>,
+    mut commands: Commands,
+    state: Res<MoveListener>,
+    mut next_state: ResMut<NextState<MoveState>>
+){
+    let square = click.square;
+    let start_pos = match state.start{
+        Some(v) => v,
+        _ => panic!("no start pos in active state"),
+    };
+    if let Ok(..) = meta_board.make_move(start_pos,square,'q'){
+        commands.trigger(SquareDeselect{});
+        commands.trigger(BoardUpdated{});
+        return;
+    }
+    if meta_board.is_same_colour_piece(square){
+        if let Some(state_square) = state.start{
+            if state_square == square{
+                next_state.set(MoveState::ActiveSquare);
                 return;
             }
         }

@@ -21,13 +21,14 @@ pub fn redirect_clear(mut next_state: ResMut<NextState<HighlightStage>>, state:R
     match state.get(){
         &MoveState::None => next_state.set(HighlightStage::None),
         &MoveState::ActiveSquare => next_state.set(HighlightStage::Active),
+        &MoveState::ActivePiece => next_state.set(HighlightStage::Active),
         //_ => next_state.set(HighlightStage::None),
     }
 }
 #[derive(States, Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub enum MoveState{
     ActiveSquare,
-    //ActivePiece(i8,i8),
+    ActivePiece,
     //Promotion,
     #[default]
     None
@@ -37,5 +38,5 @@ pub fn set_none(_:On<SquareDeselect>,mut next_state:ResMut<NextState<MoveState>>
     next_state.set(MoveState::None);
 }
 pub fn set_active_square(_:On<SquareSelect>, mut next_state:ResMut<NextState<MoveState>>){
-    next_state.set(MoveState::ActiveSquare);
+    next_state.set(MoveState::ActivePiece);
 }

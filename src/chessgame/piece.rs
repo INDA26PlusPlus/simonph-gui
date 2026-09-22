@@ -1,8 +1,9 @@
 use bevy::prelude::*;
 use samolss_chess::board::Piece;
 use super::boardconstants::*;
+use crate::chessgame::movelistener::MoveListener;
 use crate::chessgame::movevalidator::MetaBoard;
-
+use super::follower::FollowMouse;
 use super::chessassets::PieceAssets;
 use super::board::BoardPosition;
 use super::event::BoardUpdated;
@@ -41,4 +42,29 @@ pub fn update_piece_sprite(_board_updated:On<BoardUpdated>,
         };
         
     }
+}
+pub fn set_active_follow(
+    query:Query<(Entity,&BoardPosition),With<PieceComponent>>,
+    mut commands:Commands,
+    state:Res<MoveListener>
+){
+    let piece_cords = match state.start{
+        None => return,
+        Some(v) => v,
+    };
+    for (entity,pos) in query{
+        if pos.x != piece_cords.0 || pos.y != piece_cords.1{
+            continue;
+        }
+        commands.entity(entity).insert(FollowMouse);
+    }
+}
+pub fn remove_active_follow(
+    query:Query<Entity,(With<PieceComponent>,With<FollowMouse>)>,
+    mut commands:Commands
+){
+    for entity in query{
+        commands.entity(entity).remove::<FollowMouse>();
+    }
+    commands.trigger(BoardUpdated{});
 }

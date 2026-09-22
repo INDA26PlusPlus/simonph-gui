@@ -7,6 +7,7 @@ mod piece;
 mod event;
 mod boardconstants;
 mod states;
+mod follower;
 use states::*;
 mod highlighter;
 
@@ -18,18 +19,21 @@ impl Plugin for ChessGamePlugin{
         app.init_state::<MoveState>()
         .init_state::<HighlightStage>()
         .add_observer(set_clear_observer)
-        .add_systems(OnExit(MoveState::ActiveSquare),set_clear)
+        .add_systems(OnEnter(MoveState::None),set_clear)
         .add_systems(OnEnter(HighlightStage::Clear), redirect_clear)
 
         .add_observer(set_none)
         .add_observer(set_active_square)
         .add_observer(piece::update_piece_sprite)
+        .add_systems(OnEnter(MoveState::ActivePiece), piece::set_active_follow)
+        .add_systems(OnExit(MoveState::ActivePiece), piece::remove_active_follow)
 
         .init_resource::<movevalidator::MetaBoard>()
 
         .init_resource::<movelistener::MoveListener>()
         .add_observer(movelistener::none_click_listener.run_if(in_state(MoveState::None)))
         .add_observer(movelistener::has_active_listener.run_if(in_state(MoveState::ActiveSquare)))
+        .add_observer(movelistener::has_active_piece_listener.run_if(in_state(MoveState::ActivePiece)))
         .add_observer(movelistener::update_start)
         .add_observer(movelistener::reset_move_listener)
 
@@ -39,7 +43,11 @@ impl Plugin for ChessGamePlugin{
         .add_systems(Update,highlighter::added_active)
 
         .add_systems(Startup,chessassets::load_piece_assets)
+
         .add_systems(OnEnter(GameState::PlayingGame),board::makeboard)
-        .add_systems(Update,board::click_square);
+        .add_systems(Update,board::click_square.run_if(in_state(MoveState::None).or_else(in_state(MoveState::ActiveSquare))))
+        .add_systems(Update,board::drop_square.run_if(in_state(MoveState::ActivePiece)))
+        
+        .add_systems(Update, follower::follow_mouse);
     }
 }

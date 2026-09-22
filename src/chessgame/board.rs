@@ -93,3 +93,36 @@ pub fn click_square(
         }
     }
 }
+pub fn drop_square(
+    mouse: Res<ButtonInput<MouseButton>>,
+    windows: Query<&Window>,
+    camera: Query<(&Camera, &GlobalTransform)>,
+    squares: Query<(&BoardPosition, &GlobalTransform),With<Square>>,
+    mut commands:Commands
+) {
+    if !mouse.just_released(MouseButton::Left){
+        return;
+    }
+    let window = windows.single().unwrap();
+    let cursor_position = match window.cursor_position(){
+        Some(v) => v,
+        None => return,
+    };
+    let (camera, camera_position) = camera.single().unwrap();
+
+    let world_position = match camera.viewport_to_world_2d(camera_position, cursor_position){
+        Ok(v) => v,
+        Err(_) => return
+    };
+    for (square, transform) in &squares{
+        let half = 500.0/16.0;
+        let square_position = transform.translation().truncate();
+        if square_position.x - half < world_position.x 
+        && world_position.x < square_position.x + half
+        && square_position.y - half < world_position.y 
+        && world_position.y < square_position.y + half{
+            println!("clicked {} {}", square.x, square.y);
+            commands.trigger(SquareClicked{square:(square.x,square.y)});
+        }
+    }
+}
