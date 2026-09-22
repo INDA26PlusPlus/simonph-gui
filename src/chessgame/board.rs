@@ -19,7 +19,6 @@ pub fn get_world_position(x:usize, y:usize) -> (f32,f32){
     (posx,posy)
 }
 pub fn makeboard(
-    _:On<MakeBoard>,
     mut commands: Commands, 
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,

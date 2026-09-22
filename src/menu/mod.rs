@@ -1,4 +1,6 @@
 use bevy::prelude::*;
+use bevy::ui_widgets::{observe, Activate, Button};
+use super::GameState;
 pub struct MenuPlugin;
 impl Plugin for MenuPlugin{
     fn build(&self, app: &mut App) {
@@ -15,8 +17,10 @@ pub fn setup_main_menu(mut commands:Commands){
             align_items:AlignItems::Center,
             ..default()
         },
+        MainMenuEntity,
         children![
             (
+                Button,
                 Node{
                     ..default()
                 },
@@ -30,8 +34,20 @@ pub fn setup_main_menu(mut commands:Commands){
                         },
                         TextColor(Color::WHITE)
                     )
-                ]
+                ],
+                observe(|_:On<Activate>,mut next_state: ResMut<NextState<GameState>>| {
+                    next_state.set(GameState::PlayingGame);
+                }),
             )
         ]
     ));
+}
+
+#[derive(Component)]
+pub struct MainMenuEntity;
+
+pub fn cleanup_main_menu(mut commands:Commands, query:Query<Entity,With<MainMenuEntity>>){
+    for entity in query{
+        commands.entity(entity).despawn();
+    }
 }
