@@ -32,7 +32,6 @@ pub fn update_piece_sprite(_board_updated:On<BoardUpdated>,
                 sprite.image = img;
                 let w = PIECE_WIDTH*(img_asset.width() as f32);
                 let ratio = img_asset.height() as f32 / img_asset.width() as f32;
-                println!("{ratio}");
                 let h = w*ratio;
                 sprite.custom_size = Some(Vec2::new(w,h));
                 let (posx, mut posy) = get_world_position(pos.x, pos.y);
@@ -66,5 +65,9 @@ pub fn remove_active_follow(
     for entity in query{
         commands.entity(entity).remove::<FollowMouse>();
     }
+    commands.trigger(BoardUpdated{});
+}
+
+pub fn trigger_board_updated(mut commands:Commands){
     commands.trigger(BoardUpdated{});
 }

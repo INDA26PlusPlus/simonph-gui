@@ -9,3 +9,4 @@ pub const PIECE_LOWER:f32 = TILE_SIZE/8.0;
 pub const BORDER_SIZE: f32 = BOARD_SIZE/16.0;
 pub const WHITE_COLOUR:Color= Color::srgb_u8(51, 152, 75);
 pub const BLACK_COLOUR:Color = Color::srgb_u8(30, 111, 80);
+pub const HIGHLIGHT_COLOUR:Color = Color::srgb_u8(239, 220, 46);

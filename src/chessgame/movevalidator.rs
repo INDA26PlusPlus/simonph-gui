@@ -50,19 +50,25 @@ impl MetaBoard{
         }
         return ret;
     }
-    pub fn pick_promotion(&self,start:(usize,usize), end:(usize,usize))->bool{
-        if !self.get_legal_moves(start).contains(&end){
-            return false;
-        }
-        match self.get_piece(start){
-            Piece::Pawn {..} => {},
-            _ => return false,
-        }
-        return end.1 == 7 || end.1 == 0;
+    pub fn is_checkmate(&self)->bool{
+        return self.legal_moves.len() == 0;
     }
+    // pub fn pick_promotion(&self,start:(usize,usize), end:(usize,usize))->bool{
+    //     if !self.get_legal_moves(start).contains(&end){
+    //         return false;
+    //     }
+    //     match self.get_piece(start){
+    //         Piece::Pawn {..} => {},
+    //         _ => return false,
+    //     }
+    //     return end.1 == 7 || end.1 == 0;
+    // }
 }
 impl Default for MetaBoard{
     fn default() -> Self {
         MetaBoard::default()
     }
+}
+pub fn reset_board(mut meta_board:ResMut<MetaBoard>){
+    *meta_board = MetaBoard::default();
 }

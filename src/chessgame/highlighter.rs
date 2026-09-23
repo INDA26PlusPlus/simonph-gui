@@ -28,7 +28,7 @@ pub fn added_active(
 ) {
     for material in &query {
         if let Some(mut material) = materials.get_mut(&material.0) {
-            material.color = Color::srgb(1.0, 1.0, 0.0);
+            material.color = HIGHLIGHT_COLOUR;
         }
     }
 }

@@ -1,12 +1,13 @@
 use bevy::prelude::*;
 use crate::chessgame::movevalidator::MetaBoard;
-
-use super::event::BoardUpdated;
 use super::movelistener::SquareClicked;
 use super::piece::PieceComponent;
 use super::boardconstants::*;
 #[derive(Component)]
 pub struct Square{}
+
+#[derive(Component)]
+pub struct BoardComponent;
 #[derive(Component)]
 pub struct BoardPosition{
     pub x:usize,
@@ -29,6 +30,8 @@ pub fn makeboard(
     
     let border_colour = materials.add(Color::srgb_u8(93, 44, 40));
     commands.spawn((
+        BoardComponent,
+        Visibility::Hidden,
         Mesh2d(meshes.add(Rectangle::new(BOARD_SIZE + BORDER_SIZE,BOARD_SIZE + BORDER_SIZE))),
         Transform::from_xyz(0.0,0.0,-1.0),
         MeshMaterial2d(border_colour),
@@ -44,6 +47,8 @@ pub fn makeboard(
             let tilematerial = materials.add(tilecolour);
             commands.spawn((
                 Square{},
+                BoardComponent,
+                Visibility::Hidden,
                 BoardPosition{x:i,y:j},
                 Mesh2d(tile_mesh.clone()),
                 MeshMaterial2d(tilematerial),
@@ -52,13 +57,14 @@ pub fn makeboard(
             let piecesprite = Sprite::default();
             commands.spawn((
                 PieceComponent{},
+                BoardComponent,
+                Visibility::Hidden,
                 BoardPosition{x:i,y:j},
                 piecesprite,
                 Transform::from_xyz(posx, posy, 1.0),
             ));
         }
     }
-    commands.trigger(BoardUpdated{});
 }
 pub fn click_square(
     mouse: Res<ButtonInput<MouseButton>>,
@@ -129,4 +135,15 @@ pub fn drop_square(
         }
     }
     commands.trigger(SquareClicked{square:clicked_square});
+}
+
+pub fn hideboard(query:Query<&mut Visibility,With<BoardComponent>>){
+    for mut vis in query{
+        *vis = Visibility::Hidden;
+    }
+}
+pub fn showboard(query:Query<&mut Visibility,With<BoardComponent>>){
+    for mut vis in query{
+        *vis = Visibility::Visible;
+    }
 }

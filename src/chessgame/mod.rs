@@ -6,13 +6,14 @@ mod chessassets;
 mod piece;
 mod event;
 mod boardconstants;
-mod states;
+pub mod states;
 mod follower;
 use states::*;
 mod highlighter;
+mod gameoverhandler;
+use crate::chessgame::piece::trigger_board_updated;
 
 use super::GameState;
-pub use event::MakeBoard;
 pub struct ChessGamePlugin;
 impl Plugin for ChessGamePlugin{
     fn build(&self, app: &mut App) {
@@ -20,15 +21,26 @@ impl Plugin for ChessGamePlugin{
         .init_state::<HighlightStage>()
         .add_observer(set_clear_observer)
         .add_systems(OnEnter(MoveState::None),set_clear)
+        .add_systems(OnEnter(MoveState::Off),set_clear)
         .add_systems(OnEnter(HighlightStage::Clear), redirect_clear)
+
+        .init_state::<BoardState>()
+        .add_systems(OnEnter(BoardState::Startup),set_playing)
+        .add_systems(OnEnter(GameState::PlayingGame), set_startup)
+        .add_systems(OnExit(GameState::PlayingGame), set_hidden)
 
         .add_observer(set_none)
         .add_observer(set_active_square)
+        .add_systems(OnExit(BoardState::Playing),turn_off)
+        .add_systems(OnEnter(BoardState::Playing),activate_movestate)
+
         .add_observer(piece::update_piece_sprite)
+        .add_systems(OnExit(BoardState::Startup),trigger_board_updated)
         .add_systems(OnEnter(MoveState::ActivePiece), piece::set_active_follow)
         .add_systems(OnExit(MoveState::ActivePiece), piece::remove_active_follow)
 
         .init_resource::<movevalidator::MetaBoard>()
+        .add_systems(OnEnter(BoardState::Startup),movevalidator::reset_board)
 
         .init_resource::<movelistener::MoveListener>()
         .add_observer(movelistener::none_click_listener.run_if(in_state(MoveState::None)))
@@ -42,12 +54,16 @@ impl Plugin for ChessGamePlugin{
         .add_systems(OnEnter(HighlightStage::Active), highlighter::highlight_square)
         .add_systems(Update,highlighter::added_active)
 
-        .add_systems(Startup,chessassets::load_piece_assets)
+        .add_systems(OnEnter(GameState::LoadingResources),chessassets::load_piece_assets)
 
-        .add_systems(OnEnter(GameState::PlayingGame),board::makeboard)
+        .add_systems(OnExit(GameState::LoadingResources),board::makeboard)
         .add_systems(Update,board::click_square.run_if(in_state(MoveState::None).or_else(in_state(MoveState::ActiveSquare))))
         .add_systems(Update,board::drop_square.run_if(in_state(MoveState::ActivePiece)))
+        .add_systems(OnExit(BoardState::Hidden), board::showboard)
+        .add_systems(OnEnter(BoardState::Hidden), board::hideboard)
         
-        .add_systems(Update, follower::follow_mouse);
+        .add_systems(Update, follower::follow_mouse)
+        
+        .add_observer(gameoverhandler::check_checkmate);
     }
 }
