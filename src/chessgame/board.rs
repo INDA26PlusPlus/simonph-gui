@@ -81,6 +81,7 @@ pub fn click_square(
         Ok(v) => v,
         Err(_) => return
     };
+    let mut clicked_square = (8,8);
     for (square, transform) in &squares{
         let half = 500.0/16.0;
         let square_position = transform.translation().truncate();
@@ -89,9 +90,10 @@ pub fn click_square(
         && square_position.y - half < world_position.y 
         && world_position.y < square_position.y + half{
             println!("clicked {} {}", square.x, square.y);
-            commands.trigger(SquareClicked{square:(square.x,square.y)});
+            clicked_square = (square.x,square.y);
         }
     }
+    commands.trigger(SquareClicked{square:clicked_square});
 }
 pub fn drop_square(
     mouse: Res<ButtonInput<MouseButton>>,
@@ -114,6 +116,7 @@ pub fn drop_square(
         Ok(v) => v,
         Err(_) => return
     };
+    let mut clicked_square = (8,8);
     for (square, transform) in &squares{
         let half = 500.0/16.0;
         let square_position = transform.translation().truncate();
@@ -122,7 +125,8 @@ pub fn drop_square(
         && square_position.y - half < world_position.y 
         && world_position.y < square_position.y + half{
             println!("clicked {} {}", square.x, square.y);
-            commands.trigger(SquareClicked{square:(square.x,square.y)});
+            clicked_square = (square.x,square.y);
         }
     }
+    commands.trigger(SquareClicked{square:clicked_square});
 }

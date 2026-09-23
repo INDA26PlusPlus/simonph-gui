@@ -4543,7 +4543,7 @@ dependencies = [
 [[package]]
 name = "samolss-chess"
 version = "0.1.0"
-source = "git+https://github.com/INDA26PlusPlus/samolss-chess.git#9e8db3cce6af776109187f2e74f2ef3201c02531"
+source = "git+https://github.com/INDA26PlusPlus/samolss-chess.git#dcd98d99347f7fc23451f59eaa5914fe772a1d37"
 
 [[package]]
 name = "scoped-tls"

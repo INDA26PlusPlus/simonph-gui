@@ -30,6 +30,9 @@ pub fn none_click_listener(
     meta_board: Res<MetaBoard>,
     mut commands: Commands,
 ){
+    if click.square.0 == 8{
+        return;
+    }
     if meta_board.is_same_colour_piece(click.square){
         commands.trigger(SquareSelect{square:click.square});
     }
@@ -45,6 +48,10 @@ pub fn has_active_listener(
         Some(v) => v,
         _ => panic!("no start pos in active state"),
     };
+    if square.0 == 8{
+        commands.trigger(SquareDeselect);
+        return;
+    }
     if let Ok(..) = meta_board.make_move(start_pos,square,'q'){
         commands.trigger(SquareDeselect{});
         commands.trigger(BoardUpdated{});
@@ -74,6 +81,10 @@ pub fn has_active_piece_listener(
         Some(v) => v,
         _ => panic!("no start pos in active state"),
     };
+    if square.0 == 8{
+        commands.trigger(SquareDeselect{});
+        return;
+    }
     if let Ok(..) = meta_board.make_move(start_pos,square,'q'){
         commands.trigger(SquareDeselect{});
         commands.trigger(BoardUpdated{});
