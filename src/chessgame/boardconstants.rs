@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-pub const BOARD_SIZE: f32 = 500.0;
+pub const BOARD_SIZE: f32 = 600.0;
 pub const BOARD_TILES: f32 = 8.0;
 pub const TILE_SIZE: f32 = BOARD_SIZE / BOARD_TILES;
 pub const PIECE_WIDTH_RATIO: f32 = 0.7;
@@ -9,4 +9,4 @@ pub const PIECE_LOWER:f32 = TILE_SIZE/8.0;
 pub const BORDER_SIZE: f32 = BOARD_SIZE/16.0;
 pub const WHITE_COLOUR:Color= Color::srgb_u8(51, 152, 75);
 pub const BLACK_COLOUR:Color = Color::srgb_u8(30, 111, 80);
-pub const HIGHLIGHT_COLOUR:Color = Color::srgb_u8(239, 220, 46);
+pub const HIGHLIGHT_COLOUR:Color = Color::srgb_u8(239, 220, 46);    

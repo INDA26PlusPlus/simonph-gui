@@ -95,7 +95,7 @@ pub fn setup_checkmate_menu(mut commands: Commands, button_assets: Res<ButtonAss
             )),
             (
                 Button,
-                Node { ..default() },
+                Node {margin: UiRect::bottom(Val::Vh(2.0)), ..default() },
                 ImageNode {
                     image: button_assets.button_normal.clone(),
                     image_mode: NodeImageMode::Sliced(button_assets.slicer.clone()),
@@ -123,6 +123,39 @@ pub fn setup_checkmate_menu(mut commands: Commands, button_assets: Res<ButtonAss
                 observe(
                     |_: On<Activate>, mut next_state: ResMut<NextState<GameState>>| {
                         next_state.set(GameState::MainMenu);
+                    }
+                ),
+            ),
+            (
+                Button,
+                Node { ..default() },
+                ImageNode {
+                    image: button_assets.button_normal.clone(),
+                    image_mode: NodeImageMode::Sliced(button_assets.slicer.clone()),
+                    ..default()
+                },
+                Interaction::None,
+                children![(
+                    Node {
+                        padding: UiRect {
+                            left: Val::Vh(5.0),
+                            right: Val::Vh(5.0),
+                            top: Val::Vh(0.5),
+                            bottom: Val::Vh(0.5),
+                        },
+                        ..default()
+                    },
+                    Text::new("Play Again"),
+                    TextFont {
+                        font: FontSource::Handle(button_assets.font.clone()),
+                        font_size: FontSize::Vh(10.0),
+                        ..default()
+                    },
+                    TextColor(Color::WHITE)
+                )],
+                observe(
+                    |_: On<Activate>, mut next_state: ResMut<NextState<BoardState>>| {
+                        next_state.set(BoardState::Startup);
                     }
                 ),
             )
