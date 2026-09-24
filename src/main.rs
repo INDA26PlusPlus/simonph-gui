@@ -1,11 +1,13 @@
 use bevy::prelude::*;
 mod chessgame;
 mod menu;
+mod music;
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
         .add_plugins(chessgame::ChessGamePlugin)
         .add_plugins(menu::MenuPlugin)
+        .add_plugins(music::MusicPlugin)
         .insert_resource(ClearColor(Color::srgb_u8(201, 218, 234)))
         .add_systems(Startup,setup)
         .init_state::<GameState>()
