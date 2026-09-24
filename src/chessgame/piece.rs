@@ -82,3 +82,28 @@ pub fn remove_active_follow(
 pub fn trigger_board_updated(mut commands:Commands){
     commands.trigger(BoardUpdated{});
 }
+
+pub fn hideoverlapping(
+    query:Query<(&BoardPosition,&mut Visibility), With<PieceComponent>>,
+    state:Res<MoveListener>
+){
+    let prompos = state.end.unwrap();
+    let promstart = state.start.unwrap();
+    for (pos, mut vis) in query{
+        if pos.x == prompos.0{
+            if prompos.1 == 0{
+                if pos.y < 4{
+                    *vis = Visibility::Hidden;
+                }
+            }
+            else{
+                if pos.y >= 4{
+                    *vis = Visibility::Hidden;
+                }
+            }
+        }
+        if pos.x == promstart.0 && pos.y == promstart.1{
+            *vis = Visibility::Hidden;
+        }
+    }
+}

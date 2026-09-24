@@ -23,6 +23,7 @@ impl Plugin for ChessGamePlugin{
         .add_observer(set_clear_observer)
         .add_systems(OnEnter(MoveState::None),set_clear)
         .add_systems(OnEnter(MoveState::Off),set_clear)
+        .add_systems(OnEnter(MoveState::Promotion),set_clear)
         .add_systems(OnEnter(HighlightStage::Clear), redirect_clear)
 
         .init_state::<BoardState>()
@@ -40,6 +41,7 @@ impl Plugin for ChessGamePlugin{
         .add_systems(OnExit(BoardState::Startup),trigger_board_updated)
         .add_systems(OnEnter(MoveState::ActivePiece), piece::set_active_follow)
         .add_systems(OnExit(MoveState::ActivePiece), piece::remove_active_follow)
+        .add_systems(OnEnter(MoveState::Promotion),piece::hideoverlapping)
 
         .init_resource::<movevalidator::MetaBoard>()
         .add_systems(OnEnter(BoardState::Startup),movevalidator::reset_board)
