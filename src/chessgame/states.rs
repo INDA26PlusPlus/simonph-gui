@@ -31,7 +31,7 @@ pub enum MoveState{
     Off,
     ActiveSquare,
     ActivePiece,
-    //Promotion,
+    Promotion,
     None
 }
 pub fn activate_movestate(mut next_state:ResMut<NextState<MoveState>>){
@@ -42,6 +42,9 @@ pub fn set_none(_:On<SquareDeselect>,mut next_state:ResMut<NextState<MoveState>>
 }
 pub fn set_active_square(_:On<SquareSelect>, mut next_state:ResMut<NextState<MoveState>>){
     next_state.set(MoveState::ActivePiece);
+}
+pub fn set_promotion(_:On<CallForPromotion>, mut next_state:ResMut<NextState<MoveState>>){
+    next_state.set(MoveState::Promotion);
 }
 pub fn turn_off(mut next_state: ResMut<NextState<MoveState>>){
     next_state.set(MoveState::Off);

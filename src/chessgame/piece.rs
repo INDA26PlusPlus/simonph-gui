@@ -42,6 +42,17 @@ pub fn update_piece_sprite(_board_updated:On<BoardUpdated>,
         
     }
 }
+pub fn getposition(img:Handle<Image>,images: &Assets<Image>, pos:(usize,usize)) -> ((f32,f32),(f32,f32)){
+    let Some(img_asset) = images.get(&img) else{
+        panic!("graaah");
+    };
+    let w = PIECE_WIDTH*(img_asset.width() as f32);
+    let ratio = img_asset.height() as f32 / img_asset.width() as f32;
+    let h = w*ratio;
+    let (posx, mut posy) = get_world_position(pos.0, pos.1);
+    posy += h/2.0 + PIECE_LOWER - TILE_SIZE/2.0;
+    return ((w,h),(posx,posy));
+}
 pub fn set_active_follow(
     query:Query<(Entity,&BoardPosition),With<PieceComponent>>,
     mut commands:Commands,

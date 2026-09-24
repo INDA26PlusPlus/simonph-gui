@@ -1,7 +1,9 @@
 use bevy::prelude::*;
-use crate::chessgame::event::{BoardUpdated, SquareDeselect, SquareSelect};
+use crate::chessgame::event::CallForPromotion;
+use crate::chessgame::event::{BoardUpdated, PromotionClick, SquareDeselect, SquareSelect};
 
 use super::movevalidator::MetaBoard;
+use super::movevalidator::Piece;
 use super::states::MoveState;
 
 #[derive(Event)]
@@ -19,6 +21,9 @@ pub fn update_start(square:On<SquareSelect>, mut move_listener: ResMut<MoveListe
 pub fn reset_move_listener(_:On<SquareDeselect>, mut move_listener: ResMut<MoveListener>){
     move_listener.start = None;
     move_listener.end = None;
+}
+pub fn update_end(square:On<CallForPromotion>, mut move_listener: ResMut<MoveListener>){
+    move_listener.end = Some(square.square);
 }
 impl Default for MoveListener{
     fn default() -> Self {
@@ -50,6 +55,10 @@ pub fn has_active_listener(
     };
     if square.0 == 8{
         commands.trigger(SquareDeselect);
+        return;
+    }
+    if meta_board.pick_promotion(start_pos, square){
+        commands.trigger(CallForPromotion{square});
         return;
     }
     if let Ok(..) = meta_board.make_move(start_pos,square,'q'){
@@ -85,6 +94,10 @@ pub fn has_active_piece_listener(
         commands.trigger(SquareDeselect{});
         return;
     }
+    if meta_board.pick_promotion(start_pos, square){
+        commands.trigger(CallForPromotion{square});
+        return;
+    }
     if let Ok(..) = meta_board.make_move(start_pos,square,'q'){
         commands.trigger(SquareDeselect{});
         commands.trigger(BoardUpdated{});
@@ -101,6 +114,33 @@ pub fn has_active_piece_listener(
         return;
     }
     commands.trigger(SquareDeselect{});
+}
+pub fn has_promotion(
+    click: On<PromotionClick>,
+    mut meta_board: ResMut<MetaBoard>,
+    mut commands: Commands,
+    state: Res<MoveListener>,
+){
+    let piece = click.piece;
+    let pc = match piece{
+        Piece::Empty => {
+            commands.trigger(SquareDeselect{});
+            commands.trigger(BoardUpdated{});
+            return;
+        },
+        Piece::Bishop {..} => 'b',
+        Piece::Rook { .. } => 'r',
+        Piece::Queen { .. } => 'q',
+        Piece::Knight { .. } => 'n',
+        _ => panic!("unexpected piece"),
+    };
+    match meta_board.make_move(state.start.unwrap(), state.end.unwrap(), pc){
+        Ok(()) => {},
+        Err(()) => {}
+    }
+    commands.trigger(SquareDeselect{});
+    commands.trigger(BoardUpdated{});
+
 }
 //pub fn promotion(){}
 // pub fn click_listener(

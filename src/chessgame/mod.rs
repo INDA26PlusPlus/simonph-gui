@@ -11,6 +11,7 @@ mod follower;
 use states::*;
 mod highlighter;
 mod gameoverhandler;
+mod promotion;
 use crate::chessgame::piece::trigger_board_updated;
 
 use super::GameState;
@@ -31,6 +32,7 @@ impl Plugin for ChessGamePlugin{
 
         .add_observer(set_none)
         .add_observer(set_active_square)
+        .add_observer(set_promotion)
         .add_systems(OnExit(BoardState::Playing),turn_off)
         .add_systems(OnEnter(BoardState::Playing),activate_movestate)
 
@@ -46,8 +48,10 @@ impl Plugin for ChessGamePlugin{
         .add_observer(movelistener::none_click_listener.run_if(in_state(MoveState::None)))
         .add_observer(movelistener::has_active_listener.run_if(in_state(MoveState::ActiveSquare)))
         .add_observer(movelistener::has_active_piece_listener.run_if(in_state(MoveState::ActivePiece)))
+        .add_observer(movelistener::has_promotion.run_if(in_state(MoveState::Promotion)))
         .add_observer(movelistener::update_start)
         .add_observer(movelistener::reset_move_listener)
+        .add_observer(movelistener::update_end)
 
         .add_systems(OnEnter(HighlightStage::Clear),highlighter::remove_active)
         .add_systems(OnEnter(HighlightStage::Active),highlighter::highlight_legal_moves)
@@ -64,6 +68,10 @@ impl Plugin for ChessGamePlugin{
         
         .add_systems(Update, follower::follow_mouse)
         
-        .add_observer(gameoverhandler::check_checkmate);
+        .add_observer(gameoverhandler::check_checkmate)
+
+        .add_systems(OnEnter(MoveState::Promotion),promotion::spawn_promotion)
+        .add_systems(Update,promotion::click_promotion.run_if(in_state(MoveState::Promotion)))
+        .add_systems(OnExit(MoveState::Promotion),promotion::remove_promotion);
     }
 }

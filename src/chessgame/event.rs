@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use super::movevalidator::Piece;
 #[derive(Event)]
 pub struct BoardUpdated{}
 
@@ -8,3 +9,9 @@ pub struct SquareSelect{
 }
 #[derive(Event)]
 pub struct SquareDeselect;
+
+#[derive(Event)]
+pub struct PromotionClick{pub piece:Piece}
+
+#[derive(Event)]
+pub struct CallForPromotion{pub square:(usize,usize)}
